@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Radix Sort Visualizer: LSD vs MSD</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1>Radix Sort Visualizer</h1>
+        <p>Contrast least-significant-digit (LSD) and most-significant-digit (MSD) strategies on the same dataset.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel controls-panel">
+        <h2>Controls</h2>
+        <div class="control-row">
+          <label for="size-input">Items</label>
+          <input id="size-input" type="range" min="6" max="30" value="12" />
+          <span id="size-value" class="control-value">12</span>
+        </div>
+        <div class="control-row">
+          <label for="digits-input">Max digits</label>
+          <input id="digits-input" type="range" min="1" max="6" value="4" />
+          <span id="digits-value" class="control-value">4</span>
+        </div>
+        <div class="control-row">
+          <label for="seed-input">Seed</label>
+          <input id="seed-input" type="number" value="42" />
+        </div>
+        <div class="buttons-row">
+          <button id="generate-btn" class="action">Generate data</button>
+          <button id="run-btn" class="primary action">Run demo</button>
+          <button id="play-btn" class="action" data-playing="false">Play</button>
+          <button id="step-btn" class="action">Step ></button>
+          <button id="reset-btn" class="action">Reset</button>
+        </div>
+        <div class="data-preview">
+          <div class="label">Dataset</div>
+          <div id="data-preview-list" class="preview-list"></div>
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-swatch legend-swatch--focus"></span>
+            <span>Active digit</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-swatch--bucket"></span>
+            <span>Bucket contents</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="board">
+        <article class="panel algo-panel" data-algo="lsd">
+          <header>
+            <h2>LSD Radix Sort (Iterative)</h2>
+            <p>Processes from the least significant digit up to the most significant digit, making a single pass per place value.</p>
+          </header>
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-label">Passes</span>
+              <strong id="lsd-passes">--</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Bucket writes</span>
+              <strong id="lsd-operations">--</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Elapsed</span>
+              <strong id="lsd-time">--</strong>
+            </div>
+          </div>
+          <div class="step-header" id="lsd-step-label">Waiting for run...</div>
+          <div class="array-view" id="lsd-array"></div>
+          <div class="bucket-grid" id="lsd-buckets"></div>
+        </article>
+
+        <article class="panel algo-panel" data-algo="msd">
+          <header>
+            <h2>MSD Radix Sort (Recursive)</h2>
+            <p>Splits the array by the most significant digit first, then recurses into each bucket, re-reading many digits.</p>
+          </header>
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-label">Recursive calls</span>
+              <strong id="msd-passes">--</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Bucket writes</span>
+              <strong id="msd-operations">--</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Elapsed</span>
+              <strong id="msd-time">--</strong>
+            </div>
+          </div>
+          <div class="step-header" id="msd-step-label">Waiting for run...</div>
+          <div class="array-view" id="msd-array"></div>
+          <div class="bucket-grid" id="msd-buckets"></div>
+        </article>
+      </section>
+
+      <section class="panel explainer">
+        <h2>Why LSD Usually Wins</h2>
+        <ul>
+          <li><strong>Linear passes:</strong> LSD touches each element exactly once per digit place, so work is bounded by <code>n * maxDigits</code>.</li>
+          <li><strong>Cache-friendly:</strong> Iterating a dense array keeps memory taps predictable, unlike MSD's recursive bucket shuffling.</li>
+          <li><strong>Stable buckets:</strong> LSD maintains relative order on every pass, avoiding the merge bookkeeping MSD must redo.</li>
+          <li><strong>Shallow control flow:</strong> No recursion eliminates call overhead and keeps the implementation short and branch-light.</li>
+        </ul>
+        <p>The controls let you regenerate the dataset, single-step both flows, or auto-play the snapshot timeline. Watch the metrics: MSD re-examines digits inside each bucket, so bucket writes and time climb much faster than the iterative LSD version on the same input.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>Open this file in any modern browser. All computation happens locally.</p>
+      </div>
+    </footer>
+
+    <script defer src="script.js"></script>
+  </body>
+</html>
